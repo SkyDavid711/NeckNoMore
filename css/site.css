@@ -1,80 +1,93 @@
+html, body { height: 100%; }
 body {
   margin: 0;
   font-family: sans-serif;
   background: #f0f0f0;
+  overflow: hidden;  
 }
 
 /* ===== Container ===== */
 .container {
   display: flex;
-  flex-direction: row;
-  height: 100vh;
+  height: 100vh;  
+  overflow: hidden;
+  background: #000;  
+}
+
+@supports (height: 100dvh) {
+  .container { height: 100dvh; }
 }
 
 /* ===== Video Panel ===== */
 .video-panel {
+  flex: 0 0 calc(100vh * 9 / 16);     /* กว้าง = สูง(หน้าต่าง) * 9/16 */
+  background: #000;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background: black;
+  justify-content: center;
+}
+
+@supports (height: 100dvh) {
+  .video-panel { flex-basis: calc(100dvh * 9 / 16); }
 }
 
 .video-wrapper {
   position: relative;
-  aspect-ratio: 9/16;
-  height: 100%;
-  max-height: 100%;
+  height: 100vh;                        /* สูงเท่า viewport เสมอ */
+  aspect-ratio: 9 / 16;                 /* รักษาอัตราส่วน */
+  border: 5px solid transparent;        /* สำหรับแสดงขอบแดง/เขียวของคุณ */
+  transition: border-color 0.3s ease;
+}
+/* dynamic viewport */
+@supports (height: 100dvh) {
+  .video-wrapper { height: 100dvh; }
 }
 
 .video-wrapper video,
 .video-wrapper canvas {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover;    /* เติมเต็มกรอบ 9:16 */
 }
 
 .pose-counter {
-  color: white;
+  position: absolute;
+  top: 10px;
+  left: 10px;
   font-size: 1.2em;
-  margin-top: 10px;
+  font-weight: bold;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  padding: 5px 10px;
+  border-radius: 6px;
 }
 
 /* ===== Info Panel ===== */
 .info-panel {
-  flex: 1;
-  padding: 20px;
-  font-size: 1em;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: auto;        /* ถ้ามีเนื้อหาเยอะ ให้ scroll แค่ panel นี้ */
   background: #fff;
-  overflow-y: auto;
+  padding: 20px;
 }
 
-.pose-buttons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.pose-btn {
-  padding: 10px 20px;
-  border: none;
-  color: white;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 1em;
-}
+.pose-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+.pose-btn { padding: 10px 20px; border: 0; border-radius: 20px; color: #fff; cursor: pointer; }
 .pose-btn.blue { background: #1a73e8; }
 .pose-btn.green { background: #34a853; }
-.pose-btn.yellow { background: #fbbc04; color: black; }
+.pose-btn.yellow { background: #fbbc04; color: #000; }
 .pose-btn.red { background: #ea4335; }
-
-.pose-detail {
-  background: #f0f8ff;
-  padding: 15px;
-  border-radius: 10px;
+.pose-btn.purple { background: #a142f4; color: #fff; }
+.pose-detail { background: #f0f8ff; padding: 15px; border-radius: 10px; }
+.pose-btn.start-green {
+  background: #34a853; /* เขียว Google */
+  color: white;
+}
+.pose-btn.stop-red {
+  background: #ea4335; /* แดง Google */
+  color: white;
 }
 
 .video-wrapper {
@@ -95,27 +108,24 @@ body {
 
 .countdown {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 10px; right: 10px;
   font-size: 2em;
   font-weight: bold;
-  color: white;
-  background: rgba(0,0,0,0.5);
+  color: #fff;
+  background: rgba(0,0,0,.5);
   padding: 5px 10px;
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
 /* ===== Mobile (Full video) ===== */
 @media (max-width: 768px) {
-  .container {
-    flex-direction: column;
+  .container { flex-direction: column; }
+  .video-panel { flex-basis: auto; width: 100%; }
+  .video-wrapper { width: 100%; height: 100vh; }
+  @supports (height: 100dvh) {
+    .video-wrapper { height: 100dvh; }
   }
-  .info-panel {
-    display: none;
-  }
-  .video-wrapper {
-    aspect-ratio: auto;
-    width: 100%;
-    height: 100vh;
-  }
+  .info-panel { display: none; }   /* ถ้าอยากซ่อนเมนูบนมือถือ */
 }
+
+h1 { margin: 8px 12px; font-size: 18px; line-height: 1.2; }

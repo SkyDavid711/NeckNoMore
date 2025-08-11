@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pose Detection</title>
+  <title>Neck No More</title>
   <link rel="stylesheet" href="css/site.css" />
   <!-- TensorFlow.js & Mediapipe -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.14.0"></script>
@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.5/camera_utils.js"></script>
 </head>
 <body>
-  <h1>Pose Detection</h1>
+  <h1>Neck No More</h1>
   <div class="container">
     <!-- ===== Video Panel ===== -->
     <div class="video-panel">
@@ -20,10 +20,10 @@
         <video id="video" autoplay muted playsinline></video>
         <canvas id="canvas"></canvas>
         <div id="countdown" class="countdown">10</div>
-      </div>
-      <div class="pose-counter">
-        Completed: <span id="poseCount">0</span>
-      </div>
+        <div class="pose-counter">
+          Completed: <span id="poseCount">0</span>
+        </div>
+      </div>      
     </div>
 
     <!-- ===== Menu Panel ===== -->
@@ -31,8 +31,9 @@
       <h2>Please select your posture</h2>
       <div class="pose-buttons">
         <button class="pose-btn blue" data-pose="upper">1. Upper Trapezius Stretch</button>
-        <button class="pose-btn green" data-pose="shoulder">2. Shoulder Squeezes</button>
+        <button class="pose-btn green"  data-pose="chin">2. Chin Tucks</button>
         <button class="pose-btn yellow" data-pose="levator">3. Levator Scapula Stretch</button>
+        <button class="pose-btn purple" data-pose="neck">4. Neck Rotation</button>
       </div>
       <div class="pose-detail" id="pose-detail">
         <h3>Select a posture above</h3>
