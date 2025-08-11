@@ -1,0 +1,121 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #f0f0f0;
+}
+
+/* ===== Container ===== */
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+/* ===== Video Panel ===== */
+.video-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: black;
+}
+
+.video-wrapper {
+  position: relative;
+  aspect-ratio: 9/16;
+  height: 100%;
+  max-height: 100%;
+}
+
+.video-wrapper video,
+.video-wrapper canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pose-counter {
+  color: white;
+  font-size: 1.2em;
+  margin-top: 10px;
+}
+
+/* ===== Info Panel ===== */
+.info-panel {
+  flex: 1;
+  padding: 20px;
+  font-size: 1em;
+  background: #fff;
+  overflow-y: auto;
+}
+
+.pose-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.pose-btn {
+  padding: 10px 20px;
+  border: none;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1em;
+}
+.pose-btn.blue { background: #1a73e8; }
+.pose-btn.green { background: #34a853; }
+.pose-btn.yellow { background: #fbbc04; color: black; }
+.pose-btn.red { background: #ea4335; }
+
+.pose-detail {
+  background: #f0f8ff;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.video-wrapper {
+  position: relative;
+  aspect-ratio: 9/16;
+  height: 100%;
+  max-height: 100%;
+  border: 5px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.video-wrapper.red-border {
+  border-color: red;
+}
+.video-wrapper.green-border {
+  border-color: green;
+}
+
+.countdown {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2em;
+  font-weight: bold;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+/* ===== Mobile (Full video) ===== */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  .info-panel {
+    display: none;
+  }
+  .video-wrapper {
+    aspect-ratio: auto;
+    width: 100%;
+    height: 100vh;
+  }
+}
