@@ -43,7 +43,7 @@ function showPoseDetail(pose) {
     if (pose === "upper") {
         html = `
           <h3>Upper Trapezius Stretch</h3>
-          <img src="/images/upper_trapezius.png" alt="Upper Trapezius" style="max-width:200px;" />
+          <img src="images/upper_trapezius.png" alt="Upper Trapezius" style="max-width:200px;" />
           <ol>
             <li>Start with proper posture. Sit or stand tall...</li>
             <li>Gently tilt your head to one side...</li>
