@@ -35,8 +35,8 @@ export function checkNeckRotation(landmarks, state, elements) {
   state.neck.filteredYaw = yaw;
 
   // Threshold + hysteresis
-  const ENTER = 0.025;   // ต้องหันเกินค่านี้ถึงจะ "นับ"
-  const RELEASE = 0.005; // ต้องผ่อนกลับเข้ากลางต่ำกว่านี้จึง "พร้อมนับรอบใหม่"
+  const ENTER = 0.022;   // ต้องหันเกินค่านี้ถึงจะ "นับ"
+  const RELEASE = 0.001; // ต้องผ่อนกลับเข้ากลางต่ำกว่านี้จึง "พร้อมนับรอบใหม่"
   const HOLD_FR = 2;     // ต้องแตะฝั่งอย่างน้อยกี่เฟรม (~เร็วก็ผ่าน)
 
   // เตรียม state
