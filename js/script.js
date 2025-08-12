@@ -38,10 +38,16 @@ const state = {
   poseCount: 0,
 
   // Chin-tucks calibration
-  chin: {
-    baselineNoseZ: null,
-    baselineCount: 0,
-    calibrating: false
+  chin: { baselineNoseZ: null, baselineCount: 0, calibrating: false },
+
+  neck: {
+    passes: 0,
+    committedSide: null, // 'L' | 'R' | null
+    holdL: 0,
+    holdR: 0,
+    centerHold: 0,
+    readySwitch: false,
+    filteredYaw: 0
   }
 };
 
@@ -256,11 +262,26 @@ function startPoseCheck() {
     state.chin.calibrating = true;
   }
 
+  if (state.selectedPose === "neck") {
+    state.neck = {
+      passes: 0,
+      latch: false,
+      holdL: 0,
+      holdR: 0,
+      filteredYaw: 0
+    };
+    countdownElement.textContent = 0;   // เริ่มที่ 0
+  } else {
+    countdownElement.textContent = 10;
+  }
+
   videoWrapper.classList.remove("green-border");
   videoWrapper.classList.add("red-border");
 
   countdownElement.style.display = "block";
-  countdownElement.textContent = 10;
+  countdownElement.textContent = (state.selectedPose === "neck")
+    ? state.neck.passes
+    : 10;
 }
 
 function stopPoseCheck() {
@@ -273,8 +294,11 @@ function stopPoseCheck() {
   state.chin.baselineCount = 0;
   state.chin.calibrating = false;
 
+  // ✅ neck reset
+  state.neck = { passes: 0, latch: false, holdL: 0, holdR: 0, filteredYaw: 0 };
+
   poseCountElement.textContent = 0;
-  countdownElement.textContent = 10;
+  countdownElement.textContent = (state.selectedPose === "neck") ? 0 : 10;
   videoWrapper.classList.remove("red-border", "green-border");
 
   // ถ้าเปิด bottom sheet อยู่ ให้ค้างไว้หรือปิดก็ได้
@@ -317,8 +341,14 @@ function startVideo() {
 function loop() {
   if (!running) return;
 
-  // วาดภาพกล้องตลอดเวลา
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // เริ่ม mirror
+  ctx.save();
+  ctx.scale(-1, 1);
+  ctx.translate(-canvas.width, 0);
+
+  // วาดภาพจากกล้อง
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   if (state.isPoseDetectionActive) {
@@ -326,11 +356,11 @@ function loop() {
     if (result.landmarks.length > 0) {
       const landmarks = result.landmarks[0];
 
-      // วาดโครงร่างผู้ใช้
+      // วาดโครงร่างใน context เดียวกัน (จะ mirror ด้วย)
       draw.drawLandmarks(landmarks, { color: "red", radius: 4 });
       draw.drawConnectors(landmarks, PoseLandmarker.POSE_CONNECTIONS, { color: "green", lineWidth: 2 });
 
-      // เรียกตรวจแต่ละท่า
+      // ตรวจแต่ละท่า → ใช้ landmarks ตรง ๆ (ไม่กระทบเพราะ landmark เป็นข้อมูลตำแหน่งจริง)
       if (state.selectedPose === "upper") {
         checkUpperTrapezius(landmarks, state, elements);
       } else if (state.selectedPose === "chin") {
@@ -342,6 +372,8 @@ function loop() {
       }
     }
   }
+
+  ctx.restore(); // จบการ mirror
 
   requestAnimationFrame(loop);
 }
