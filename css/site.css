@@ -1,47 +1,50 @@
+:root { --menu-h: 56px; }
+
+/* ===== Base ===== */
+* { box-sizing: border-box; }
 html, body { height: 100%; }
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans";
   background: #f0f0f0;
-  overflow: hidden;  
+  overflow: hidden;          /* กัน scroll ทั้งหน้า */
 }
 
-/* ===== Container ===== */
+h1 { margin: 8px 12px; font-size: 18px; line-height: 1.2; }
+
+/* ===== Layout ===== */
 .container {
   display: flex;
-  height: 100vh;  
-  overflow: hidden;
-  background: #000;  
+  height: 100vh;
+  background: #000;          /* ถ้าพื้นที่เหลือ ให้ดำ */
 }
+@supports (height: 100dvh) { .container { height: 100dvh; } }
 
-@supports (height: 100dvh) {
-  .container { height: 100dvh; }
-}
-
-/* ===== Video Panel ===== */
+/* Video panel (left) */
 .video-panel {
-  flex: 0 0 calc(100vh * 9 / 16);     /* กว้าง = สูง(หน้าต่าง) * 9/16 */
-  background: #000;
+  flex: 0 0 calc(100vh * 9 / 16);      /* ความกว้างสัมพันธ์ 9:16 กับความสูงหน้าต่าง */
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #000;
 }
-
 @supports (height: 100dvh) {
   .video-panel { flex-basis: calc(100dvh * 9 / 16); }
 }
 
 .video-wrapper {
   position: relative;
-  height: 100vh;                        /* สูงเท่า viewport เสมอ */
-  aspect-ratio: 9 / 16;                 /* รักษาอัตราส่วน */
-  border: 5px solid transparent;        /* สำหรับแสดงขอบแดง/เขียวของคุณ */
-  transition: border-color 0.3s ease;
+  height: 100vh;
+  aspect-ratio: 9 / 16;
+  border: 5px solid transparent;       /* ใช้แสดงสถานะ สีแดง/เขียว */
+  transition: border-color .25s ease;
+  overflow: hidden;
 }
-/* dynamic viewport */
-@supports (height: 100dvh) {
-  .video-wrapper { height: 100dvh; }
-}
+@supports (height: 100dvh) { .video-wrapper { height: 100dvh; } }
+
+/* สลับเป็นกระจกได้: เอา comment ออกถ้าต้องการ mirror
+.video-wrapper video, .video-wrapper canvas { transform: scaleX(-1); }
+*/
 
 .video-wrapper video,
 .video-wrapper canvas {
@@ -49,83 +52,130 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;    /* เติมเต็มกรอบ 9:16 */
+  object-fit: cover;
 }
 
-.pose-counter {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: white;
-  background: rgba(0,0,0,0.5);
-  padding: 5px 10px;
-  border-radius: 6px;
-}
-
-/* ===== Info Panel ===== */
-.info-panel {
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: auto;        /* ถ้ามีเนื้อหาเยอะ ให้ scroll แค่ panel นี้ */
-  background: #fff;
-  padding: 20px;
-}
-
-.pose-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
-.pose-btn { padding: 10px 20px; border: 0; border-radius: 20px; color: #fff; cursor: pointer; }
-.pose-btn.blue { background: #1a73e8; }
-.pose-btn.green { background: #34a853; }
-.pose-btn.yellow { background: #fbbc04; color: #000; }
-.pose-btn.red { background: #ea4335; }
-.pose-btn.purple { background: #a142f4; color: #fff; }
-.pose-detail { background: #f0f8ff; padding: 15px; border-radius: 10px; }
-.pose-btn.start-green {
-  background: #34a853; /* เขียว Google */
-  color: white;
-}
-.pose-btn.stop-red {
-  background: #ea4335; /* แดง Google */
-  color: white;
-}
-
-.video-wrapper {
-  position: relative;
-  aspect-ratio: 9/16;
-  height: 100%;
-  max-height: 100%;
-  border: 5px solid transparent;
-  transition: border-color 0.3s ease;
-}
-
-.video-wrapper.red-border {
-  border-color: red;
-}
-.video-wrapper.green-border {
-  border-color: green;
-}
-
+/* overlays */
 .countdown {
   position: absolute;
   top: 10px; right: 10px;
-  font-size: 2em;
-  font-weight: bold;
+  font-size: 2rem;
+  font-weight: 800;
   color: #fff;
   background: rgba(0,0,0,.5);
-  padding: 5px 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.pose-counter {
+  position: absolute;
+  top: 10px; left: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0,0,0,.5);
+  padding: 6px 10px;
   border-radius: 6px;
 }
 
-/* ===== Mobile (Full video) ===== */
-@media (max-width: 768px) {
+/* Info panel (right on Desktop) */
+.info-panel {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: auto;
+  background: #fff;
+  padding: 20px;
+}
+.pose-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.pose-btn {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.pose-btn.blue   { background: #1a73e8; }
+.pose-btn.green  { background: #34a853; }
+.pose-btn.yellow { background: #fbbc04; color: #000; }
+.pose-btn.purple { background: #a142f4; }
+
+.pose-btn.start-green { background: #34a853; color: #fff; }
+.pose-btn.stop-red    { background: #ea4335; color: #fff; }
+
+.pose-detail { background: #eef6ff; padding: 14px; border-radius: 12px; }
+
+/* Border status */
+.video-wrapper.red-border   { border-color: #ea4335; }
+.video-wrapper.green-border { border-color: #34a853; }
+
+/* ===== Mobile & Tablet: ใช้เมนูล่าง + bottom sheet ===== */
+@media (max-width: 1024px), (hover: none) and (pointer: coarse) {
   .container { flex-direction: column; }
   .video-panel { flex-basis: auto; width: 100%; }
   .video-wrapper { width: 100%; height: 100vh; }
-  @supports (height: 100dvh) {
-    .video-wrapper { height: 100dvh; }
+  @supports (height: 100dvh) { .video-wrapper { height: 100dvh; } }
+
+  .info-panel { display: none !important; }
+
+  /* แถบปุ่มล่าง */
+  .mobile-menu {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: var(--menu-h);
+    display: flex;
+    gap: 8px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,.5);
+    z-index: 60;
+    backdrop-filter: blur(2px);
   }
-  .info-panel { display: none; }   /* ถ้าอยากซ่อนเมนูบนมือถือ */
+  .mobile-pose-btn {
+    flex: 1; min-width: 0;
+    border: 0; border-radius: 14px;
+    padding: 8px 6px; font-size: .85rem; color:#fff; font-weight:700;
+  }
+  .mobile-pose-btn.blue{background:#1a73e8}
+  .mobile-pose-btn.green{background:#34a853}
+  .mobile-pose-btn.yellow{background:#fbbc04;color:#000}
+  .mobile-pose-btn.purple{background:#a142f4}
+
+  /* Wrapper ของ sheet: โปร่งใสทั้งตัว, ไม่ทับเมนูล่าง */
+  .mobile-sheet {
+    position: fixed;
+    inset: 0 0 var(--menu-h) 0;      /* top right bottom left */
+    transform: translateY(100%);
+    transition: transform .28s ease;
+    background: transparent;         /* ✅ ไม่คลุมทั้งจออีกแล้ว */
+    z-index: 50;                      /* อยู่ใต้แถบปุ่มล่าง */
+  }
+  .mobile-sheet.open { transform: translateY(0); }
+
+  /* เนื้อหาแผง (ตัวที่สไลด์ขึ้น) */
+  .mobile-sheet__content {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    min-height: 38vh;                /* ✅ ให้มีพื้นที่ใช้งานพอ */
+    max-height: 70vh;
+    overflow: auto;
+    padding: 14px 16px 16px;
+    color: #fff;
+    background: rgba(20,20,20,.30);  /* ✅ พื้นโปร่งใสแค่แผง */
+    backdrop-filter: blur(6px);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+  }
+  .mobile-sheet__close {
+    position: absolute;
+    top: 8px; right: 12px;
+    border: 0; background: transparent;
+    color: #fff; font-size: 24px; line-height: 1; cursor: pointer;
+  }
+
+  #mobilePoseDetail p, #mobilePoseDetail li { color:#fff; }
 }
 
-h1 { margin: 8px 12px; font-size: 18px; line-height: 1.2; }
+/* ===== Desktop only: ซ่อน mobile UI ===== */
+@media (min-width: 1025px) {
+  .mobile-menu, .mobile-sheet { display: none !important; }
+}

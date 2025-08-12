@@ -9,6 +9,7 @@ import { checkChinTucks } from "./checkChinTucks.js";
 import { checkLevatorScapula } from "./checkLevatorScapula.js";
 import { checkNeckRotation } from "./checkNeckRotation.js";
 
+/* ---------- DOM ---------- */
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -18,19 +19,25 @@ const countdownElement = document.getElementById("countdown");
 const poseCountElement = document.getElementById("poseCount");
 const poseDetail = document.getElementById("pose-detail");
 
+/* Mobile UI */
+const mobileMenu = document.getElementById("mobileMenu");
+const mobileSheet = document.getElementById("mobileSheet");
+const mobileSheetClose = document.getElementById("mobileSheetClose");
+const mobilePoseDetail = document.getElementById("mobilePoseDetail");
+
+/* ---------- App State ---------- */
 let poseLandmarker;
 let running = false;
 let draw;
 
-// ---- State กลางของแอป ----
 const state = {
-  selectedPose: null,
+  selectedPose: null,          // 'upper' | 'chin' | 'levator' | 'neck'
   isPoseDetectionActive: false,
   poseTimer: 0,
   wrongPoseTimer: 0,
   poseCount: 0,
 
-  // สำหรับ Chin Tucks (คาลิเบรต z-axis)
+  // Chin-tucks calibration
   chin: {
     baselineNoseZ: null,
     baselineCount: 0,
@@ -39,28 +46,40 @@ const state = {
 };
 
 const elements = { videoWrapper, countdownElement, poseCountElement };
-
-// เก็บ reference ปุ่มที่สร้างแบบ dynamic เพื่อสลับ START/STOP
 let startStopBtn = null;
 
-// ---- เลือกท่าออกกำลัง ----
+/* ---------- Desktop: pose buttons ---------- */
 document.querySelectorAll(".pose-btn").forEach(btn => {
   btn.addEventListener("click", () => {
+    if (state.isPoseDetectionActive) stopPoseCheck();  // safety
     state.selectedPose = btn.dataset.pose;
-    renderPoseDetail(state.selectedPose);
+    renderPoseDetailDesktop(state.selectedPose);
   });
 });
 
-function renderPoseDetail(pose) {
+/* ---------- Mobile: bottom menu buttons ---------- */
+document.querySelectorAll(".mobile-pose-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (state.isPoseDetectionActive) stopPoseCheck();  // safety
+    state.selectedPose = btn.dataset.pose;
+    openMobileSheet(state.selectedPose);
+  });
+});
+
+if (mobileSheetClose) {
+  mobileSheetClose.addEventListener("click", closeMobileSheet);
+}
+
+/* ---------- Desktop panel render ---------- */
+function renderPoseDetailDesktop(pose) {
   let html = "";
   if (pose === "upper") {
     html = `
       <h3>Upper Trapezius Stretch</h3>
-      <img src="/images/upper_trapezius.png" alt="Upper Trapezius" style="max-width:200px;" />
       <ol>
         <li>นั่ง/ยืนหลังตรง</li>
-        <li>ค่อยๆ เอียงศีรษะไปด้านข้าง ให้หูเข้าใกล้ไหล่</li>
-        <li>(ทางเลือก) ใช้มือกดเบาๆ เพิ่มการยืด</li>
+        <li>เอียงศีรษะไปด้านข้างให้หูเข้าใกล้ไหล่</li>
+        <li>(ทางเลือก) ใช้มือช่วยดึงเบา ๆ</li>
         <li>ค้าง 20–30 วินาที แล้วสลับข้าง</li>
       </ol>
       <button id="startBtn" class="pose-btn start-green">START</button>
@@ -69,9 +88,9 @@ function renderPoseDetail(pose) {
     html = `
       <h3>Chin Tucks</h3>
       <ol>
-        <li>นั่ง/ยืนหลังตรง จ้องมองตรง</li>
-        <li>ดึงคางถอยหลัง (คอยืดตรง) ไม่ก้ม/เงยศีรษะ</li>
-        <li>ค้างไว้ตามเวลา แล้วผ่อนคลาย</li>
+        <li>นั่ง/ยืนหลังตรง มองตรง</li>
+        <li>ดึงคางถอยหลัง (ไม่ก้ม/เงย)</li>
+        <li>ค้างตามเวลา แล้วผ่อนคลาย</li>
       </ol>
       <p style="opacity:.75">เริ่มต้นจะคาลิเบรตตำแหน่งศีรษะสั้นๆ อัตโนมัติ</p>
       <button id="startBtn" class="pose-btn start-green">START</button>
@@ -81,21 +100,21 @@ function renderPoseDetail(pose) {
       <h3>Levator Scapula Stretch</h3>
       <ol>
         <li>นั่ง/ยืนหลังตรง ไหล่ผ่อนคลาย</li>
-        <li>หมุนหน้าไปด้านซ้าย/ขวาเล็กน้อย (มองไปใต้มุมรักแร้ฝั่งตรงข้าม)</li>
-        <li>ก้มศีรษะลงเล็กน้อย และเอียงศีรษะตาม</li>
-        <li>(ทางเลือก) ใช้มือช่วยดึงศีรษะเฉียงลงเบา ๆ</li>
+        <li>หมุนหน้าเล็กน้อย มองลงเฉียงไปใต้มุมรักแร้</li>
+        <li>ก้มลงเล็กน้อย และเอียงศีรษะตาม</li>
+        <li>(ทางเลือก) ใช้มือช่วยดึงเบา ๆ</li>
       </ol>
       <button id="startBtn" class="pose-btn start-green">START</button>
     `;
   } else if (pose === "neck") {
     html = `
-        <h3>Neck Rotation</h3>
-        <ol>
-        <li>นั่ง/ยืนหลังตรง มองตรงก่อนเริ่ม</li>
-        <li>หมุนหน้าไปทางซ้ายหรือขวาให้รู้สึกยืดที่คอ (ไม่ก้ม/เงย)</li>
+      <h3>Neck Rotation</h3>
+      <ol>
+        <li>นั่ง/ยืนหลังตรง มองตรง</li>
+        <li>หมุนหน้าไปซ้ายหรือขวา (ไม่ก้ม/เงย)</li>
         <li>ค้างตามเวลา แล้วผ่อนคลาย</li>
-        </ol>
-        <button id="startBtn" class="pose-btn start-green">START</button>
+      </ol>
+      <button id="startBtn" class="pose-btn start-green">START</button>
     `;
   } else {
     html = `<h3>Select a posture above</h3>`;
@@ -103,47 +122,140 @@ function renderPoseDetail(pose) {
 
   poseDetail.innerHTML = html;
   startStopBtn = document.getElementById("startBtn");
-  if (startStopBtn) {
-    startStopBtn.addEventListener("click", onStartClicked, { once: true });
-  }
+  if (startStopBtn) startStopBtn.addEventListener("click", onStartClickedDesktop, { once: true });
 }
 
-// ---- START / STOP ----
-function onStartClicked() {
+/* ---------- Mobile bottom sheet ---------- */
+function openMobileSheet(pose) {
+  document.body.style.overflow = "hidden";
+  mobileSheet.setAttribute("aria-hidden", "false");
+  mobileSheet.classList.add("open");
+  renderPoseDetailMobile(pose);
+}
+
+function closeMobileSheet() {
+  document.body.style.overflow = "";
+  mobileSheet.setAttribute("aria-hidden", "true");
+  mobileSheet.classList.remove("open");
+  mobilePoseDetail.innerHTML = "";
+}
+
+/* ✅ เดเลเกต: กดปุ่ม × หรือแตะพื้นหลัง (โปร่งใส) เพื่อปิด */
+mobileSheet.addEventListener("click", (e) => {
+  const onCloseBtn = e.target.closest(".mobile-sheet__close");
+  const onBackdrop = e.target === mobileSheet;
+  if (onCloseBtn || onBackdrop) closeMobileSheet();
+});
+
+function renderPoseDetailMobile(pose) {
+  let html = "";
+  if (pose === "upper") {
+    html = `
+      <button class="mobile-sheet__close" aria-label="Close">×</button>
+      <div class="mobile-sheet__content">
+        <h3 style="margin:6px 0 8px">Upper Trapezius Stretch</h3>
+        <ul style="margin:0 0 12px 18px">
+          <li>เอียงศีรษะไปด้านข้างให้หูเข้าใกล้ไหล่</li>
+          <li>(ทางเลือก) ใช้มือช่วยดึงเบา ๆ</li>
+        </ul>
+        <button id="startBtnMobile" class="pose-btn start-green" style="padding:8px 14px">START</button>
+      </div>
+    `;
+  } else if (pose === "chin") {
+    html = `
+      <button class="mobile-sheet__close" aria-label="Close">×</button>
+      <div class="mobile-sheet__content">
+        <h3 style="margin:6px 0 8px">Chin Tucks</h3>
+        <ul style="margin:0 0 12px 18px">
+          <li>ดึงคางถอยหลัง (ไม่ก้ม/เงย)</li>
+        </ul>
+        <button id="startBtnMobile" class="pose-btn start-green" style="padding:8px 14px">START</button>
+      </div>
+    `;
+  } else if (pose === "levator") {
+    html = `
+      <button class="mobile-sheet__close" aria-label="Close">×</button>
+      <div class="mobile-sheet__content">
+        <h3 style="margin:6px 0 8px">Levator Scapula Stretch</h3>
+        <ul style="margin:0 0 12px 18px">
+          <li>หมุนหน้าเล็กน้อย มองลงเฉียง</li>
+          <li>ก้มลงเล็กน้อย และเอียงศีรษะตาม</li>
+        </ul>
+        <button id="startBtnMobile" class="pose-btn start-green" style="padding:8px 14px">START</button>
+      </div>
+    `;
+  } else if (pose === "neck") {
+    html = `
+      <button class="mobile-sheet__close" aria-label="Close">×</button>
+      <div class="mobile-sheet__content">
+        <h3 style="margin:6px 0 8px">Neck Rotation</h3>
+        <ul style="margin:0 0 12px 18px">
+          <li>หมุนหน้าไปซ้ายหรือขวา โดยไม่ก้ม/เงย</li>
+        </ul>
+        <button id="startBtnMobile" class="pose-btn start-green" style="padding:8px 14px">START</button>
+      </div>
+    `;
+  }
+
+  mobilePoseDetail.innerHTML = html;
+
+  // bind close + start/stop
+  startStopBtn = document.getElementById("startBtnMobile");
+  if (startStopBtn) startStopBtn.addEventListener("click", onStartClickedMobile, { once: true });
+}
+
+/* ---------- START/STOP (Desktop) ---------- */
+function onStartClickedDesktop() {
   startPoseCheck();
-  // เปลี่ยนปุ่มเป็น STOP
   if (startStopBtn) {
     startStopBtn.textContent = "STOP";
     startStopBtn.classList.remove("start-green");
-    startStopBtn.classList.add("stop-red");    
-    startStopBtn.addEventListener("click", onStopClicked, { once: true });
+    startStopBtn.classList.add("stop-red");
+    startStopBtn.addEventListener("click", onStopClickedDesktop, { once: true });
   }
 }
-
-function onStopClicked() {
+function onStopClickedDesktop() {
   stopPoseCheck();
-  // เปลี่ยนปุ่มกลับเป็น START
   if (startStopBtn) {
     startStopBtn.textContent = "START";
     startStopBtn.classList.remove("stop-red");
     startStopBtn.classList.add("start-green");
-    startStopBtn.addEventListener("click", onStartClicked, { once: true });
+    startStopBtn.addEventListener("click", onStartClickedDesktop, { once: true });
   }
 }
 
+/* ---------- START/STOP (Mobile sheet) ---------- */
+function onStartClickedMobile() {
+  startPoseCheck();
+  if (startStopBtn) {
+    startStopBtn.textContent = "STOP";
+    startStopBtn.classList.remove("start-green");
+    startStopBtn.classList.add("stop-red");
+    startStopBtn.addEventListener("click", onStopClickedMobile, { once: true });
+  }
+}
+function onStopClickedMobile() {
+  stopPoseCheck();
+  if (startStopBtn) {
+    startStopBtn.textContent = "START";
+    startStopBtn.classList.remove("stop-red");
+    startStopBtn.classList.add("start-green");
+    startStopBtn.addEventListener("click", onStartClickedMobile, { once: true });
+  }
+}
+
+/* ---------- Core START/STOP ---------- */
 function startPoseCheck() {
   state.isPoseDetectionActive = true;
   state.poseTimer = 0;
   state.wrongPoseTimer = 0;
 
-  // ตั้งค่าเริ่มต้นสำหรับ Chin Tucks
   if (state.selectedPose === "chin") {
     state.chin.baselineNoseZ = null;
     state.chin.baselineCount = 0;
     state.chin.calibrating = true;
   }
 
-  // ไม่รีเซ็ต poseCount ที่นี่ เพื่อให้นับต่อเนื่องหลัง START
   videoWrapper.classList.remove("green-border");
   videoWrapper.classList.add("red-border");
 
@@ -152,22 +264,24 @@ function startPoseCheck() {
 }
 
 function stopPoseCheck() {
-  // หยุดและรีเซ็ตทุกอย่างตามที่ขอ
   state.isPoseDetectionActive = false;
   state.poseTimer = 0;
   state.wrongPoseTimer = 0;
   state.poseCount = 0;
+
   state.chin.baselineNoseZ = null;
   state.chin.baselineCount = 0;
   state.chin.calibrating = false;
 
   poseCountElement.textContent = 0;
   countdownElement.textContent = 10;
-
   videoWrapper.classList.remove("red-border", "green-border");
+
+  // ถ้าเปิด bottom sheet อยู่ ให้ค้างไว้หรือปิดก็ได้
+  // closeMobileSheet();
 }
 
-// ===== Mediapipe Init =====
+/* ---------- Mediapipe Init & Loop ---------- */
 async function init() {
   const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
@@ -203,10 +317,8 @@ function startVideo() {
 function loop() {
   if (!running) return;
 
-  // แสดงภาพจากกล้องตลอด
+  // วาดภาพกล้องตลอดเวลา
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  //ctx.save();
-  // ถ้าคุณตั้งให้ mirror ด้วย CSS อยู่แล้ว ไม่ต้อง scale(-1,1)
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   if (state.isPoseDetectionActive) {
@@ -214,26 +326,23 @@ function loop() {
     if (result.landmarks.length > 0) {
       const landmarks = result.landmarks[0];
 
-      // วาดโครงกระดูก
+      // วาดโครงร่างผู้ใช้
       draw.drawLandmarks(landmarks, { color: "red", radius: 4 });
-      draw.drawConnectors(landmarks, PoseLandmarker.POSE_CONNECTIONS, {
-        color: "green", lineWidth: 2
-      });
+      draw.drawConnectors(landmarks, PoseLandmarker.POSE_CONNECTIONS, { color: "green", lineWidth: 2 });
 
-      // ตรวจเฉพาะท่าที่เลือก
+      // เรียกตรวจแต่ละท่า
       if (state.selectedPose === "upper") {
         checkUpperTrapezius(landmarks, state, elements);
       } else if (state.selectedPose === "chin") {
         checkChinTucks(landmarks, state, elements);
       } else if (state.selectedPose === "levator") {
         checkLevatorScapula(landmarks, state, elements);
-      } else if (state.selectedPose === "neck") {       
-        checkNeckRotation(landmarks, state, elements);  
+      } else if (state.selectedPose === "neck") {
+        checkNeckRotation(landmarks, state, elements);
       }
     }
   }
 
-  ctx.restore();
   requestAnimationFrame(loop);
 }
 

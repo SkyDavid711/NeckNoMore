@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Neck No More</title>
-  <link rel="stylesheet" href="css/site.css" />
+  <title>Pose Detection</title>
+  <link rel="stylesheet" href="/css/site.css" />
   <!-- TensorFlow.js & Mediapipe -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.14.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/pose.js"></script>
@@ -12,7 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.5/camera_utils.js"></script>
 </head>
 <body>
-  <h1>Neck No More</h1>
+  <h1>Pose Detection</h1>
   <div class="container">
     <!-- ===== Video Panel ===== -->
     <div class="video-panel">
@@ -23,14 +23,14 @@
         <div class="pose-counter">
           Completed: <span id="poseCount">0</span>
         </div>
-      </div>      
+      </div>
     </div>
 
-    <!-- ===== Menu Panel ===== -->
+    <!-- ===== Desktop Menu Panel ===== -->
     <div class="info-panel">
       <h2>Please select your posture</h2>
       <div class="pose-buttons">
-        <button class="pose-btn blue" data-pose="upper">1. Upper Trapezius Stretch</button>
+        <button class="pose-btn blue"   data-pose="upper">1. Upper Trapezius Stretch</button>
         <button class="pose-btn green"  data-pose="chin">2. Chin Tucks</button>
         <button class="pose-btn yellow" data-pose="levator">3. Levator Scapula Stretch</button>
         <button class="pose-btn purple" data-pose="neck">4. Neck Rotation</button>
@@ -39,7 +39,24 @@
         <h3>Select a posture above</h3>
       </div>
     </div>
+
+    <!-- ===== Mobile Menu Bar (Bottom) ===== -->
+    <div class="mobile-menu" id="mobileMenu">
+      <button class="mobile-pose-btn blue"   data-pose="upper">Upper</button>
+      <button class="mobile-pose-btn green"  data-pose="chin">Chin</button>
+      <button class="mobile-pose-btn yellow" data-pose="levator">Levator</button>
+      <button class="mobile-pose-btn purple" data-pose="neck">Rotation</button>
+    </div>
+
+    <!-- ===== Mobile Bottom Sheet ===== -->
+    <div class="mobile-sheet" id="mobileSheet" aria-hidden="true">
+      <div class="mobile-sheet__content" id="mobileSheetContent">
+        <button class="mobile-sheet__close" id="mobileSheetClose" aria-label="Close">×</button>
+        <div id="mobilePoseDetail"></div>
+      </div>
+    </div>
   </div>
-  <script type="module" src="js/script.js"></script>
+
+  <script type="module" src="/js/script.js"></script>
 </body>
 </html>
