@@ -109,6 +109,17 @@ h1 { margin: 8px 12px; font-size: 18px; line-height: 1.2; }
 .video-wrapper.red-border   { border-color: #ea4335; }
 .video-wrapper.green-border { border-color: #34a853; }
 
+.pose-detail-img{
+  display:block;
+  width:50%;
+  height:auto;
+  max-height:40vh;         /* สูงสุด ~40% ของหน้าจอ */
+  object-fit:contain;
+  border-radius:12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.15);
+  margin:8px 0 12px;
+}
+
 /* ===== Mobile & Tablet: ใช้เมนูล่าง + bottom sheet ===== */
 @media (max-width: 1024px), (hover: none) and (pointer: coarse) {
   .container { flex-direction: column; }
@@ -173,9 +184,36 @@ h1 { margin: 8px 12px; font-size: 18px; line-height: 1.2; }
   }
 
   #mobilePoseDetail p, #mobilePoseDetail li { color:#fff; }
+
+  /* Mobile STOP bar */
+  .mobile-menu.stop-mode {
+    justify-content: center;
+    gap: 0;
+  }
+  .mobile-stop-btn {
+    flex: 1;
+    height: calc(var(--menu-h) - 16px);  /* 16 = padding top+bottom ของแถบ */
+    border: 0;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #fff;
+    background: #ea4335; /* แดง */
+  }
+
+  .mobile-sheet .pose-detail-img{
+    max-height:20vh;       /* ไม่กินพื้นที่ข้อความและปุ่ม */
+  }
 }
 
 /* ===== Desktop only: ซ่อน mobile UI ===== */
 @media (min-width: 1025px) {
   .mobile-menu, .mobile-sheet { display: none !important; }
+
+  .pose-panel .pose-detail-img,
+  .details .pose-detail-img{
+    max-width:360px;       /* จำกัดความกว้างรูปในกรอบขวา */
+    max-height:45vh;
+    margin:10px auto 14px; /* จัดกลางในกรอบ */
+  }
 }
