@@ -185,7 +185,7 @@ function renderPoseDetailMobile(pose) {
       <button class="mobile-sheet__close" aria-label="Close">×</button>
       <div class="mobile-sheet__content">
         <h3 style="margin:6px 0 8px">Upper Trapezius Stretch</h3>
-        <ol style="margin:0 0 12px 18px">
+        <ol style="margin:0 0 12px 0px">
           <li>นั่งบนเก้าอี้ มือข้างหนึ่งจับขอบเก้าอี้</li>
           <li>เอียงศีรษะไปอีกด้านหนึ่ง ใช้มือด้านที่เอียงศรีษะไปดึงศีรษะเพิ่มเล็กน้อย ค้างไว้ 10 วินาที</li>
           <li>ทำสลับข้าง</li>		
@@ -197,7 +197,7 @@ function renderPoseDetailMobile(pose) {
           loading="lazy"
           decoding="async"
         />
-        <button id="startBtnMobile" class="pose-btn start-green" style="padding:8px 14px">START</button>
+        <button id="startBtnMobile" class="pose-btn mobile-btn-start start-green" style="padding:8px 14px">START</button>
       </div>
     `;
   } else if (pose === "chin") {
@@ -205,7 +205,7 @@ function renderPoseDetailMobile(pose) {
       <button class="mobile-sheet__close" aria-label="Close">×</button>
       <div class="mobile-sheet__content">
         <h3 style="margin:6px 0 8px">Chin Tucks</h3>
-        <ol style="margin:0 0 12px 18px">
+        <ol style="margin:0 0 12px 0px">
           <li>นั่งหรือยืนหลังตรง มองตรงไปข้างหน้า </li>
 		      <li>ค่อย ๆ ดันคางถอยหลังราวกับจะทำให้คอ “หดสั้นลง”จนรู้สึกตึงบริเวณต้นคอด้านหลังค้างไว้ 10 วินาที ทำ 3 ครั้ง </li>	
         </ol>
@@ -216,7 +216,7 @@ function renderPoseDetailMobile(pose) {
         loading="lazy"
         decoding="async"
       />      
-        <button id="startBtnMobile" class="pose-btn start-green" style="padding:8px 14px">START</button>
+        <button id="startBtnMobile" class="pose-btn mobile-btn-start start-green" style="padding:8px 14px">START</button>
       </div>
     `;
   } else if (pose === "neck") {
@@ -224,7 +224,7 @@ function renderPoseDetailMobile(pose) {
       <button class="mobile-sheet__close" aria-label="Close">×</button>
       <div class="mobile-sheet__content">
         <h3 style="margin:6px 0 8px">Neck Rotation</h3>
-        <ol style="margin:0 0 12px 18px">
+        <ol style="margin:0 0 12px 0px">
           <li>นั่งหลังตรง ค่อย ๆ หมุนศีรษะไปทางซ้ายจนรู้สึกตึงแล้วทำสลับข้าง</li>
           <li>ทำสลับซ้ายขวา 10 ครั้งนับเป็น 1รอบ  ทำ 3รอบ</li>        
         </ol>
@@ -235,7 +235,7 @@ function renderPoseDetailMobile(pose) {
         loading="lazy"
         decoding="async"
       />      
-        <button id="startBtnMobile" class="pose-btn start-green" style="padding:8px 14px">START</button>
+        <button id="startBtnMobile" class="pose-btn mobile-btn-start start-green" style="padding:8px 14px">START</button>
       </div>
     `;
   } else if (pose === "sbs") {
@@ -243,7 +243,7 @@ function renderPoseDetailMobile(pose) {
       <button class="mobile-sheet__close" aria-label="Close">×</button>
       <div class="mobile-sheet__content">
         <h3 style="margin:6px 0 8px">Shoulder Blade Squeeze</h3>
-        <ol style="margin:0 0 12px 18px">
+        <ol style="margin:0 0 12px 0px">
           <li> ถอยหลัง นั่งตัวตรงให้เห็นหัวไหล่ทั้ง2 ข้าง </li>
 	        <li> บีบสะบักเข้าหากันเหมือนจะหนีบอะไรไว้ระหว่างหลัง ค้างไว้ 5 วินาที ทำ 10ครั้ง </li>
         </ol>
@@ -254,7 +254,7 @@ function renderPoseDetailMobile(pose) {
         loading="lazy"
         decoding="async"
       />      
-        <button id="startBtnMobile" class="pose-btn start-green" style="padding:8px 14px">START</button>
+        <button id="startBtnMobile" class="pose-btn mobile-btn-start start-green" style="padding:8px 14px">START</button>
       </div>
     `;
   } 
