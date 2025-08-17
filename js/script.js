@@ -373,6 +373,7 @@ function stopPoseCheck() {
   state.poseTimer = 0;
   state.wrongPoseTimer = 0;
   state.poseCount = 0;
+  state.lastSide = null; 
 
   state.chin.baselineNoseZ = null;
   state.chin.baselineCount = 0;
