@@ -344,6 +344,7 @@ function startPoseCheck() {
     state.chin.baselineNoseZ = null;
     state.chin.baselineCount = 0;
     state.chin.calibrating = true;
+    state.chin.lastTs = null; 
   }
 
   if (state.selectedPose === "neck") {
@@ -378,6 +379,7 @@ function stopPoseCheck() {
   state.chin.baselineNoseZ = null;
   state.chin.baselineCount = 0;
   state.chin.calibrating = false;
+  state.chin.lastTs = null;
 
   // ✅ neck reset
   state.neck = { passes: 0, latch: false, holdL: 0, holdR: 0, filteredYaw: 0 };
